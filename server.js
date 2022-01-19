@@ -1,22 +1,23 @@
+require('dotenv').config();
 const express = require('express');
-const path = require('path');
+const connectDB = require('./config/mongoose');
+const productRoutes = require('./routes/productRoutes');
+
+connectDB();
 
 const app = express();
 
-const publicDirectory = path.join(__dirname, './public')
-app.use(express.static(publicDirectory));
+app.use(express.json());
 
-app.set('view engine', 'hbs');
+app.use('/api/products', productRoutes)
 
 app.get("/", (req, res) => {
-    res.send("Welcome to mycha");
-})
-
-app.get("/contact", (req, res) => {
-    res.send("Welcome to the contact page");
+    res.send("Hello World");
 })
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
+
+app.listen(port, (req, res) => {
     console.log(`Server is listening on ${port}`)
-})
+});
+
