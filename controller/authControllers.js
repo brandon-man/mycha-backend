@@ -1,14 +1,11 @@
 const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 // Error handler
 
 const handleErrors = (err) => {
   console.log(err.message, err.code);
   let errors = {
-    firstName: "",
-    lastName: "",
-    address: "",
-    phone: "XXX-XXX-XXXX",
     username: "",
     password: "",
     email: "",
@@ -30,14 +27,10 @@ const handleErrors = (err) => {
   return errors;
 };
 
-const getSignUp = async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.status(200).json(users);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Signup error" });
-  }
+const maxAge = 3 * 24 * 60 * 60;
+
+const createToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT, { expiresIn: maxAge });
 };
 
 const getLogin = async (req, res) => {
@@ -46,26 +39,6 @@ const getLogin = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Login error" });
-  }
-};
-
-const postSignUp = async (req, res) => {
-  const { firstName, lastName, address, phone, username, password, email } =
-    req.body;
-  try {
-    const user = await User.create({
-      firstName,
-      lastName,
-      address,
-      phone,
-      username,
-      password,
-      email,
-    });
-    res.status(201).json(user);
-  } catch (error) {
-    const errors = handleErrors(error);
-    res.status(400).json({ errors });
   }
 };
 
@@ -79,8 +52,6 @@ const postLogin = async (req, res) => {
 };
 
 module.exports = {
-  getSignUp,
   getLogin,
-  postSignUp,
   postLogin,
 };
