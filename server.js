@@ -4,7 +4,6 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const connectDB = require("./config/mongoose");
 const productRoutes = require("./routes/productRoutes");
-const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 
 connectDB();
@@ -22,8 +21,6 @@ app.get("/", function (req, res, next) {
 });
 
 app.use("/api/products", productRoutes);
-
-app.use("/api/users", userRoutes);
 
 app.use("/api/auth", authRoutes);
 

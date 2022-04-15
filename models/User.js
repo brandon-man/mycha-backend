@@ -36,6 +36,19 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// static method to login user
+userSchema.statics.login = async function (username, password) {
+  const user = await this.findOne({ username });
+  if (user) {
+    const auth = await bcrypt.compare(password, this.password);
+    if (auth) {
+      return user;
+    }
+    throw Error("Incorrect password");
+  }
+  throw Error("Incorrect username");
+};
+
 const User = mongoose.model("user", userSchema);
 
 module.exports = User;

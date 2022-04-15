@@ -33,6 +33,16 @@ const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT, { expiresIn: maxAge });
 };
 
+const getSignup = async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Cannot find users" });
+  }
+};
+
 const getLogin = async (req, res) => {
   try {
     res.json("login");
@@ -42,9 +52,28 @@ const getLogin = async (req, res) => {
   }
 };
 
-const postLogin = async (req, res) => {
+// POST /api/auth/signup
+const postSignup = async (req, res) => {
   try {
-    res.status(201).json("new login");
+    const { username, password, email } = req.body;
+    const user = await User.create({ username, password, email });
+    const token = createToken(user._id);
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(201).json({ user: user._id });
+  } catch (error) {
+    const errors = handleErrors(error);
+    res.status(401).json({ errors });
+  }
+};
+
+// POST /api/auth/login
+const postLogin = async (req, res) => {
+  const { username, password } = req.body;
+  try {
+    const user = await User.login(username, password);
+    const token = createToken(user._id);
+    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    res.status(200).json({ user: user._id });
   } catch (error) {
     console.error(error);
     res.status(400).json({ message: "Login error" });
@@ -52,6 +81,8 @@ const postLogin = async (req, res) => {
 };
 
 module.exports = {
+  getSignup,
   getLogin,
+  postSignup,
   postLogin,
 };
