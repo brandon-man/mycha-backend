@@ -33,6 +33,7 @@ const createToken = (id) => {
   return jwt.sign({ id }, process.env.JWT, { expiresIn: maxAge });
 };
 
+// Register new user
 const getSignup = async (req, res) => {
   try {
     const users = await User.find({});
@@ -40,15 +41,6 @@ const getSignup = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Cannot find users" });
-  }
-};
-
-const getLogin = async (req, res) => {
-  try {
-    res.json("login");
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Login error" });
   }
 };
 
@@ -63,6 +55,16 @@ const postSignup = async (req, res) => {
   } catch (error) {
     const errors = handleErrors(error);
     res.status(401).json({ errors });
+  }
+};
+
+// Login user
+const getLogin = async (req, res) => {
+  try {
+    res.json("login");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Login error" });
   }
 };
 
@@ -82,7 +84,7 @@ const postLogin = async (req, res) => {
 
 module.exports = {
   getSignup,
-  getLogin,
   postSignup,
+  getLogin,
   postLogin,
 };
